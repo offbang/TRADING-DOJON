@@ -3,226 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZellaStyle Trading Journal & Dashboard</title>
+    <title>Trading Dojon - Performance Analytics</title>
     <style>
         :root {
-            --bg-main: #0b0e14;
-            --bg-card: #141a24;
-            --bg-input: #1c2431;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --border-color: #263143;
-            --instagram-brand: #e1306c;
+            --bg-workspace: #f8fafc;
+            --bg-sidebar: #0f172a;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-light: #f8fafc;
+            --zella-purple: #5856d6;
+            --zella-purple-hover: #4745b4;
+            --metric-green: #10b981;
+            --metric-red: #ef4444;
+            --border-light: #e2e8f0;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-main);
+            background-color: var(--bg-workspace);
             color: var(--text-main);
-            padding: 24px;
+            display: flex;
+            min-height: 100vh;
         }
 
-        .container {
+        /* Sidebar Navigation Layout */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 32px;
+            padding-left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand span {
+            color: var(--zella-purple);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active a, .nav-item a:hover {
+            background-color: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+        }
+
+        .nav-item.active a {
+            border-left: 4px solid var(--zella-purple);
+            border-radius: 4px 8px 8px 4px;
+            background-color: rgba(88, 86, 214, 0.15);
+        }
+
+        /* Main Workspace Panel */
+        .workspace {
+            margin-left: 260px;
+            flex: 1;
+            padding: 32px;
             max-width: 1400px;
-            margin: 0 auto;
         }
 
-        /* Header block stylings */
-        header {
+        /* Top Command & Social Bar */
+        .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border-color);
             margin-bottom: 32px;
         }
 
-        .logo-area h1 {
+        .greeting h2 {
             font-size: 24px;
             font-weight: 700;
-            letter-spacing: -0.5px;
+            color: #0f172a;
         }
 
-        .logo-area h1 span {
-            color: var(--accent-green);
+        .greeting p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 2px;
         }
 
-        .social-badge {
+        .action-controls {
             display: flex;
             align-items: center;
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            padding: 8px 16px;
+            gap: 16px;
+        }
+
+        .ig-link-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #ffffff;
+            border: 1px solid var(--border-light);
+            padding: 10px 18px;
             border-radius: 20px;
-            color: white;
+            color: var(--text-main);
             text-decoration: none;
-            font-weight: 600;
             font-size: 14px;
-            transition: transform 0.2s ease;
-            box-shadow: 0 4px 12px rgba(225, 48, 108, 0.2);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
         }
 
-        .social-badge:hover {
-            transform: translateY(-2px);
+        .ig-link-badge:hover {
+            border-color: #e1306c;
+            color: #e1306c;
+            transform: translateY(-1px);
         }
 
-        /* Metric Widgets Grid layout */
-        .metrics-grid {
+        /* Metrics Rows */
+        .metrics-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin-bottom: 32px;
         }
 
-        .card {
+        .metric-card {
             background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-light);
             border-radius: 12px;
-            padding: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
-        .card-title {
-            color: var(--text-muted);
-            font-size: 12px;
-            text-transform: uppercase;
+        .metric-label {
+            font-size: 13px;
             font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
-        .card-value {
+        .metric-value {
             font-size: 28px;
             font-weight: 700;
+            color: #0f172a;
         }
 
-        .card-value.green { color: var(--accent-green); }
-        .card-value.red { color: var(--accent-red); }
+        .metric-value.positive { color: var(--metric-green); }
+        .metric-value.negative { color: var(--metric-red); }
 
-        /* Split Main Section Layout */
-        .main-layout {
+        /* Multi-Window Split Layout */
+        .content-split {
             display: grid;
-            grid-template-columns: 1fr 350px;
+            grid-template-columns: 1fr 400px;
             gap: 32px;
             margin-bottom: 32px;
         }
 
-        /* Execution Logging Form Section */
-        .form-section h2, .calendar-section h2 {
-            font-size: 18px;
-            margin-bottom: 16px;
-            color: var(--text-main);
-        }
-
-        .journal-form {
+        .section-panel {
             background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-light);
             border-radius: 12px;
             padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .panel-header {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+        }
+
+        /* Execution Log Input Fields */
+        .logger-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 16px;
         }
 
-        .form-group {
+        .input-block {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
-        .form-group.full-width {
+        .input-block.span-all {
             grid-column: span 2;
         }
 
-        label {
+        .input-block label {
             font-size: 12px;
+            font-weight: 600;
             color: var(--text-muted);
-            font-weight: 500;
         }
 
-        input, select, textarea {
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 10px 12px;
+        .input-block input, .input-block select, .input-block textarea {
+            border: 1px solid var(--border-light);
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 10px 14px;
             color: var(--text-main);
             font-size: 14px;
             outline: none;
+            transition: all 0.2s ease;
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--accent-green);
+        .input-block input:focus, .input-block select:focus, .input-block textarea:focus {
+            border-color: var(--zella-purple);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(88, 86, 214, 0.1);
         }
 
-        .btn-submit {
+        .submit-trigger {
             grid-column: span 2;
-            background-color: var(--accent-green);
-            color: #000;
+            background-color: var(--zella-purple);
+            color: #ffffff;
             border: none;
-            padding: 12px;
-            border-radius: 6px;
-            font-weight: 700;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
-            font-size: 15px;
+            transition: background 0.2s ease;
             margin-top: 8px;
         }
 
-        .btn-submit:hover {
-            opacity: 0.9;
+        .submit-trigger:hover {
+            background-color: var(--zella-purple-hover);
         }
 
-        /* Color Coded Visual Calendar Component */
-        .calendar-box {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
+        /* TradeZella Calendar Layout Replication */
+        .calendar-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .calendar-grid {
+        .calendar-row {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 8px;
+        }
+
+        .day-cell {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 16px 8px;
             text-align: center;
+            min-height: 85px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .calendar-day {
-            background-color: var(--bg-input);
-            padding: 12px 0;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
+        .day-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
         }
 
-        .calendar-day.win {
-            background-color: rgba(16, 185, 129, 0.15);
-            border: 1px solid var(--accent-green);
-            color: var(--accent-green);
+        .day-value {
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 8px;
         }
 
-        .calendar-day.loss {
-            background-color: rgba(239, 68, 68, 0.15);
-            border: 1px solid var(--accent-red);
-            color: var(--accent-red);
+        .day-cell.profitable {
+            background-color: rgba(16, 185, 129, 0.06);
+            border-color: rgba(16, 185, 129, 0.3);
         }
+        .day-cell.profitable .day-value { color: var(--metric-green); }
 
-        /* Historical Table Data Logs */
-        .table-section h2 {
-            font-size: 18px;
-            margin-bottom: 16px;
+        .day-cell.unprofitable {
+            background-color: rgba(239, 68, 68, 0.06);
+            border-color: rgba(239, 68, 68, 0.3);
         }
+        .day-cell.unprofitable .day-value { color: var(--metric-red); }
 
-        .table-wrapper {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+        /* Data Logging Table Matrix */
+        .table-panel {
             overflow: hidden;
+        }
+
+        .responsive-table-scroller {
+            overflow-x: auto;
         }
 
         table {
@@ -233,251 +331,297 @@
         }
 
         th {
-            background-color: rgba(25, 33, 46, 0.5);
+            background-color: #f8fafc;
             color: var(--text-muted);
             font-weight: 600;
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 16px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 13px;
         }
 
         td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 16px;
+            border-bottom: 1px solid var(--border-light);
+            color: #334155;
         }
 
         tr:last-child td {
             border-bottom: none;
         }
 
-        .badge {
+        .dir-badge {
             padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
-        .badge.long { background-color: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
-        .badge.short { background-color: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+        .dir-badge.l-pos { background-color: rgba(16, 185, 129, 0.12); color: var(--metric-green); }
+        .dir-badge.s-neg { background-color: rgba(239, 68, 68, 0.12); color: var(--metric-red); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Header Block Component -->
-    <header>
-        <div class="logo-area">
-            <h1>Trade<span>Zella</span> Dashboard</h1>
+    <!-- Left Structural Navigation Deck -->
+    <aside class="sidebar">
+        <div class="brand">
+            TRADING <span>DOJON</span>
         </div>
-        <a href="https://www.instagram.com/8_issy" target="_blank" class="social-badge">
-            📸 @8_issy
-        </a>
-    </header>
+        <ul class="nav-links">
+            <li class="nav-item active"><a href="#">Dashboard</a></li>
+            <li class="nav-item"><a href="#">Daily Journal</a></li>
+            <li class="nav-item"><a href="#">Trade Log</a></li>
+            <li class="nav-item"><a href="#">Playbook Stats</a></li>
+            <li class="nav-item"><a href="#">Reports</a></li>
+        </ul>
+    </aside>
 
-    <!-- Analytical Performance Metrics Section -->
-    <section class="metrics-grid">
-        <div class="card">
-            <div class="card-title">Net P&L</div>
-            <div class="card-value green" id="stat-pnl">$1,420.00</div>
+    <!-- Main Dynamic Application Screen -->
+    <main class="workspace">
+        
+        <!-- Header Bar Component -->
+        <div class="top-bar">
+            <div class="greeting">
+                <h2>Welcome Back, Trader</h2>
+                <p>Track your edge, isolate your mistakes, optimize execution.</p>
+            </div>
+            <div class="action-controls">
+                <a href="https://www.instagram.com/8_issy" target="_blank" class="ig-link-badge">
+                    <span>📸</span> @8_issy
+                </a>
+            </div>
         </div>
-        <div class="card">
-            <div class="card-title">Win Rate</div>
-            <div class="card-value" id="stat-winrate">66.6%</div>
-        </div>
-        <div class="card">
-            <div class="card-title">Profit Factor</div>
-            <div class="card-value green" id="stat-pf">2.45</div>
-        </div>
-        <div class="card">
-            <div class="card-title">Total Trades</div>
-            <div class="card-value" id="stat-total">3</div>
-        </div>
-    </section>
 
-    <!-- Middle Split Content: Form Tracker + Mini Calendar -->
-    <div class="main-layout">
-        <section class="form-section">
-            <h2>Log Execution</h2>
-            <form class="journal-form" id="tradeForm">
-                <div class="form-group">
-                    <label for="ticker">Ticker / Symbol</label>
-                    <input type="text" id="ticker" placeholder="e.g. NVDA or EURUSD" required>
-                </div>
-                <div class="form-group">
-                    <label for="direction">Direction</label>
-                    <select id="direction">
-                        <option value="Long">Long</option>
-                        <option value="Short">Short</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="entry">Entry Price</label>
-                    <input type="number" id="entry" step="any" placeholder="0.00" required>
-                </div>
-                <div class="form-group">
-                    <label for="exit">Exit Price</label>
-                    <input type="number" id="exit" step="any" placeholder="0.00" required>
-                </div>
-                <div class="form-group">
-                    <label for="size">Position Size</label>
-                    <input type="number" id="size" placeholder="Shares/Contracts" required>
-                </div>
-                <div class="form-group">
-                    <label for="pnl">Net P&L ($)</label>
-                    <input type="number" id="pnl" step="any" placeholder="Use negative for losses" required>
-                </div>
-                <div class="form-group full-width">
-                    <label for="notes">Playbook Setup / Notes</label>
-                    <textarea id="notes" rows="2" placeholder="Describe strategy, market conditions, or psychological errors..."></textarea>
-                </div>
-                <button type="submit" class="btn-submit">Submit to Journal</button>
-            </form>
-        </section>
-
-        <!-- Dynamic Visual Calendar Block -->
-        <section class="calendar-section">
-            <h2>Session Calendar</h2>
-            <div class="calendar-box">
-                <div class="calendar-grid">
-                    <div class="calendar-day win">Mon<br>+$850</div>
-                    <div class="calendar-day loss">Tue<br>-$430</div>
-                    <div class="calendar-day win">Wed<br>+$1000</div>
-                    <div class="calendar-day">Thu<br>$0</div>
-                    <div class="calendar-day">Fri<br>$0</div>
-                </div>
+        <!-- Performance Key Stats Row -->
+        <section class="metrics-container">
+            <div class="metric-card">
+                <div class="metric-label">Net P&L</div>
+                <div class="metric-value positive" id="ui-net-pnl">+$1,840.00</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Win Rate</div>
+                <div class="metric-value" id="ui-winrate">75.0%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Profit Factor</div>
+                <div class="metric-value positive" id="ui-profit-factor">3.41</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total Trades</div>
+                <div class="metric-value" id="ui-total-trades">4</div>
             </div>
         </section>
-    </div>
 
-    <!-- Data Log Table List Component -->
-    <section class="table-section">
-        <h2>Execution History</h2>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Symbol</th>
-                        <th>Direction</th>
-                        <th>Entry</th>
-                        <th>Exit</th>
-                        <th>Size</th>
-                        <th>P&L ($)</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody id="tradeLogBody">
-                    <tr>
-                        <td><strong>NVDA</strong></td>
-                        <td><span class="badge long">Long</span></td>
-                        <td>$128.50</td>
-                        <td>$132.00</td>
-                        <td>200</td>
-                        <td style="color: var(--accent-green); font-weight: 600;">+$700.00</td>
-                        <td>VWAP Pullback entry at key support level. Took profits cleanly.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>AAPL</strong></td>
-                        <td><span class="badge short">Short</span></td>
-                        <td>$182.10</td>
-                        <td>$184.25</td>
-                        <td>200</td>
-                        <td style="color: var(--accent-red); font-weight: 600;">-$430.00</td>
-                        <td>Forced breakout trade against structural trend. Hit stop loss.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>TSLA</strong></td>
-                        <td><span class="badge long">Long</span></td>
-                        <td>$210.00</td>
-                        <td>$215.75</td>
-                        <td>200</td>
-                        <td style="color: var(--accent-green); font-weight: 600;">+$1,150.00</td>
-                        <td>Opening Range Breakout (ORB) momentum capture. Followed risk rules perfectly.</td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Main Workspace Dual Panel Grid Split -->
+        <div class="content-split">
+            
+            <!-- Manual Logger Section Panel -->
+            <section class="section-panel">
+                <div class="panel-header">Log New Trade Execution</div>
+                <form id="executionForm" class="logger-grid">
+                    <div class="input-block">
+                        <label for="symbol">Symbol / Ticker</label>
+                        <input type="text" id="symbol" placeholder="e.g., TSLA" required>
+                    </div>
+                    <div class="input-block">
+                        <label for="side">Direction</label>
+                        <select id="side">
+                            <option value="Long">Long</option>
+                            <option value="Short">Short</option>
+                        </select>
+                    </div>
+                    <div class="input-block">
+                        <label for="entryPx">Entry Price ($)</label>
+                        <input type="number" id="entryPx" step="any" placeholder="0.00" required>
+                    </div>
+                    <div class="input-block">
+                        <label for="exitPx">Exit Price ($)</label>
+                        <input type="number" id="exitPx" step="any" placeholder="0.00" required>
+                    </div>
+                    <div class="input-block">
+                        <label for="volume">Volume / Size</label>
+                        <input type="number" id="volume" placeholder="e.g., 100" required>
+                    </div>
+                    <div class="input-block">
+                        <label for="realizedPnl">Realized P&L ($)</label>
+                        <input type="number" id="realizedPnl" step="any" placeholder="Negative for losses" required>
+                    </div>
+                    <div class="input-block span-all">
+                        <label for="tradeNotes">Playbook Setup Notes & Review</label>
+                        <textarea id="tradeNotes" rows="3" placeholder="Identify market patterns or internal psychological state..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-trigger">Sync Trade to Log</button>
+                </form>
+            </section>
+
+            <!-- TradeZella Replicated Week View Calendar Component -->
+            <section class="section-panel">
+                <div class="panel-header">Weekly Session Overview</div>
+                <div class="calendar-wrapper">
+                    <div class="calendar-row">
+                        <div class="day-cell profitable">
+                            <div class="day-label">Mon</div>
+                            <div class="day-value">+$900</div>
+                        </div>
+                        <div class="day-cell unprofitable">
+                            <div class="day-label">Tue</div>
+                            <div class="day-value">-$310</div>
+                        </div>
+                        <div class="day-cell profitable">
+                            <div class="day-label">Wed</div>
+                            <div class="day-value">+$450</div>
+                        </div>
+                        <div class="day-cell profitable">
+                            <div class="day-label">Thu</div>
+                            <div class="day-value">+$800</div>
+                        </div>
+                        <div class="day-cell">
+                            <div class="day-label">Fri</div>
+                            <div class="day-value">$0</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
-    </section>
-</div>
 
-<!-- Reactive Scripting Core Logic Engine -->
-<script>
-    // Hardcoded array initializing baseline state variables
-    let tradesArray = [
-        { ticker: 'NVDA', direction: 'Long', entry: 128.50, exit: 132.00, size: 200, pnl: 700, notes: 'VWAP Pullback entry at key support level. Took profits cleanly.' },
-        { ticker: 'AAPL', direction: 'Short', entry: 182.10, exit: 184.25, size: 200, pnl: -430, notes: 'Forced breakout trade against structural trend. Hit stop loss.' },
-        { ticker: 'TSLA', direction: 'Long', entry: 210.00, exit: 215.75, size: 200, pnl: 1150, notes: 'Opening Range Breakout (ORB) momentum capture.' }
-    ];
+        <!-- Historic Trades Data Logging Block -->
+        <section class="section-panel table-panel">
+            <div class="panel-header">Recent Executions Matrix</div>
+            <div class="responsive-table-scroller">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Contract / Stock</th>
+                            <th>Side</th>
+                            <th>Avg Entry</th>
+                            <th>Avg Exit</th>
+                            <th>Volume</th>
+                            <th>Net Return ($)</th>
+                            <th>Playbook / Strategy Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradeMatrixBody">
+                        <tr>
+                            <td><strong>NVDA</strong></td>
+                            <td><span class="dir-badge l-pos">Long</span></td>
+                            <td>$125.00</td>
+                            <td>$129.50</td>
+                            <td>200</td>
+                            <td style="color: var(--metric-green); font-weight: 600;">+$900.00</td>
+                            <td>Opening Range Breakout tracking broader tech index trend. Structured scaling.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AMD</strong></td>
+                            <td><span class="dir-badge s-neg">Short</span></td>
+                            <td>$160.00</td>
+                            <td>$163.10</td>
+                            <td>100</td>
+                            <td style="color: var(--metric-red); font-weight: 600;">-$310.00</td>
+                            <td>Fading structural resistance early. Flawed entry window, stopped out cleanly.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AAPL</strong></td>
+                            <td><span class="dir-badge l-pos">Long</span></td>
+                            <td>$220.00</td>
+                            <td>$224.50</td>
+                            <td>100</td>
+                            <td style="color: var(--metric-green); font-weight: 600;">+$450.00</td>
+                            <td>Moving average support bounce matching strong institutional relative volume.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>META</strong></td>
+                            <td><span class="dir-badge l-pos">Long</span></td>
+                            <td>$495.00</td>
+                            <td>$503.00</td>
+                            <td>100</td>
+                            <td style="color: var(--metric-green); font-weight: 600;">+$800.00</td>
+                            <td>High-volume clearing drive. Profit targets hit perfectly on structural extension.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-    const form = document.getElementById('tradeForm');
-    
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Parsing Form Submission Node Inputs
-        const newTrade = {
-            ticker: document.getElementById('ticker').value.toUpperCase(),
-            direction: document.getElementById('direction').value,
-            entry: parseFloat(document.getElementById('entry').value),
-            exit: parseFloat(document.getElementById('exit').value),
-            size: parseInt(document.getElementById('size').value),
-            pnl: parseFloat(document.getElementById('pnl').value),
-            notes: document.getElementById('notes').value || 'N/A'
-        };
+    </main>
 
-        tradesArray.push(newTrade);
-        updateInterface();
-        form.reset();
-    });
+    <!-- Scripting Calculations Engine -->
+    <script>
+        // Internal structured dataset simulating baseline user log state
+        let journalDatabase = [
+            { ticker: 'NVDA', side: 'Long', entry: 125.00, exit: 129.50, vol: 200, pnl: 900, notes: 'Opening Range Breakout tracking broader tech index trend.' },
+            { ticker: 'AMD', side: 'Short', entry: 160.00, exit: 163.10, vol: 100, pnl: -310, notes: 'Fading structural resistance early. Flawed entry window.' },
+            { ticker: 'AAPL', side: 'Long', entry: 220.00, exit: 224.50, vol: 100, pnl: 450, notes: 'Moving average support bounce matching strong institutional relative volume.' },
+            { ticker: 'META', side: 'Long', entry: 495.00, exit: 503.00, vol: 100, pnl: 800, notes: 'High-volume clearing drive. Profit targets hit perfectly.' }
+        ];
 
-    function updateInterface() {
-        const tbody = document.getElementById('tradeLogBody');
-        tbody.innerHTML = '';
-        
-        let totalPnl = 0;
-        let wins = 0;
-        let grossProfits = 0;
-        let grossLosses = 0;
+        const formNode = document.getElementById('executionForm');
 
-        // Repopulate execution records block
-        tradesArray.forEach(trade => {
-            totalPnl += trade.pnl;
-            if(trade.pnl > 0) {
-                wins++;
-                grossProfits += trade.pnl;
-            } else {
-                grossLosses += Math.abs(trade.pnl);
-            }
+        formNode.addEventListener('submit', function(event) {
+            event.preventDefault();
 
-            const pnlStyle = trade.pnl >= 0 ? `color: var(--accent-green); font-weight: 600;` : `color: var(--accent-red); font-weight: 600;`;
-            const sign = trade.pnl >= 0 ? '+$' : '-$';
-            const displayPnl = sign + Math.abs(trade.pnl).toFixed(2);
-            const badgeClass = trade.direction.toLowerCase() === 'long' ? 'badge long' : 'badge short';
+            const entryCaptured = {
+                ticker: document.getElementById('symbol').value.toUpperCase(),
+                side: document.getElementById('side').value,
+                entry: parseFloat(document.getElementById('entryPx').value),
+                exit: parseFloat(document.getElementById('exitPx').value),
+                vol: parseInt(document.getElementById('volume').value),
+                pnl: parseFloat(document.getElementById('realizedPnl').value),
+                notes: document.getElementById('tradeNotes').value || 'Manual log record.'
+            };
 
-            const row = `<tr>
-                <td><strong>${trade.ticker}</strong></td>
-                <td><span class="${badgeClass}">${trade.direction}</span></td>
-                <td>$${trade.entry.toFixed(2)}</td>
-                <td>$${trade.exit.toFixed(2)}</td>
-                <td>${trade.size}</td>
-                <td style="${pnlStyle}">${displayPnl}</td>
-                <td>${trade.notes}</td>
-            </tr>`;
-            tbody.insertAdjacentHTML('beforeend', row);
+            journalDatabase.push(entryCaptured);
+            recalculateMetricsEngine();
+            formNode.reset();
         });
 
-        // Recalculating mathematical summary fields 
-        const winRate = tradesArray.length > 0 ? ((wins / tradesArray.length) * 100).toFixed(1) : 0;
-        const profitFactor = grossLosses > 0 ? (grossProfits / grossLosses).toFixed(2) : grossProfits > 0 ? 'Shiny' : '0.00';
+        function recalculateMetricsEngine() {
+            const containerBody = document.getElementById('tradeMatrixBody');
+            containerBody.innerHTML = '';
 
-        // Updating UI Nodes
-        const pnlEl = document.getElementById('stat-pnl');
-        pnlEl.textContent = (totalPnl >= 0 ? '+$' : '-$') + Math.abs(totalPnl).toFixed(2);
-        pnlEl.className = totalPnl >= 0 ? 'card-value green' : 'card-value red';
-        
-        document.getElementById('stat-winrate').textContent = winRate + '%';
-        document.getElementById('stat-pf').textContent = profitFactor;
-        document.getElementById('stat-total').textContent = tradesArray.length;
-    }
-</script>
+            let netCumulativeReturn = 0;
+            let totalWinsCount = 0;
+            let aggregateProfits = 0;
+            let aggregateLosses = 0;
+
+            journalDatabase.forEach(item => {
+                netCumulativeReturn += item.pnl;
+                if(item.pnl > 0) {
+                    totalWinsCount++;
+                    aggregateProfits += item.pnl;
+                } else {
+                    aggregateLosses += Math.abs(item.pnl);
+                }
+
+                const fontColorCode = item.pnl >= 0 ? 'var(--metric-green)' : 'var(--metric-red)';
+                const operatorSign = item.pnl >= 0 ? '+$' : '-$';
+                const formattedReturn = operatorSign + Math.abs(item.pnl).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                const dynamicBadge = item.side === 'Long' ? 'dir-badge l-pos' : 'dir-badge s-neg';
+
+                const tableRowHtml = `<tr>
+                    <td><strong>${item.ticker}</strong></td>
+                    <td><span class="${dynamicBadge}">${item.side}</span></td>
+                    <td>$${item.entry.toFixed(2)}</td>
+                    <td>$${item.exit.toFixed(2)}</td>
+                    <td>${item.vol}</td>
+                    <td style="color: ${fontColorCode}; font-weight: 600;">${formattedReturn}</td>
+                    <td>${item.notes}</td>
+                </tr>`;
+                containerBody.insertAdjacentHTML('beforeend', tableRowHtml);
+            });
+
+            // Statistical Formulas Execution
+            const calculatedWinRate = journalDatabase.length > 0 ? ((totalWinsCount / journalDatabase.length) * 100).toFixed(1) : '0.0';
+            const calculatedProfitFactor = aggregateLosses > 0 ? (aggregateProfits / aggregateLosses).toFixed(2) : (aggregateProfits > 0 ? 'Max Edge' : '0.00');
+
+            // Render output adjustments inside interface nodes
+            const pnlDisplayNode = document.getElementById('ui-net-pnl');
+            pnlDisplayNode.textContent = (netCumulativeReturn >= 0 ? '+$' : '-$') + Math.abs(netCumulativeReturn).toLocaleString(undefined, {minimumFractionDigits: 2});
+            pnlDisplayNode.className = netCumulativeReturn >= 0 ? 'metric-value positive' : 'metric-value negative';
+
+            document.getElementById('ui-winrate').textContent = calculatedWinRate + '%';
+            document.getElementById('ui-profit-factor').textContent = calculatedProfitFactor;
+            document.getElementById('ui-total-trades').textContent = journalDatabase.length;
+        }
+    </script>
 </body>
 </html>
