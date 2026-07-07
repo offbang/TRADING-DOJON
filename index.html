@@ -121,12 +121,6 @@
             margin-top: 2px;
         }
 
-        .action-controls {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
         .ig-link-badge {
             display: flex;
             align-items: center;
@@ -183,20 +177,14 @@
         .metric-value.positive { color: var(--metric-green); }
         .metric-value.negative { color: var(--metric-red); }
 
-        /* Multi-Window Split Layout */
-        .content-split {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 32px;
-            margin-bottom: 32px;
-        }
-
+        /* Structural Page Sections Layout */
         .section-panel {
             background-color: var(--bg-card);
             border: 1px solid var(--border-light);
             border-radius: 12px;
             padding: 24px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 32px;
         }
 
         .panel-header {
@@ -204,9 +192,24 @@
             font-weight: 700;
             color: #0f172a;
             margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Execution Log Input Fields */
+        .panel-subtitle {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        /* Execution Log Input Fields Split Layout */
+        .logger-split {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 32px;
+        }
+
         .logger-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -264,55 +267,72 @@
             background-color: var(--zella-purple-hover);
         }
 
-        /* TradeZella Calendar Layout Replication */
-        .calendar-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .calendar-row {
+        /* TradeZella Weekly Grid View */
+        .weekly-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        /* TradeZella Full Monthly Matrix View */
+        .monthly-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
             gap: 8px;
         }
 
-        .day-cell {
-            background-color: #f8fafc;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            padding: 16px 8px;
+        .calendar-header-day {
             text-align: center;
-            min-height: 85px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .day-label {
             font-size: 11px;
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
+            padding-bottom: 8px;
+        }
+
+        /* Shared Calendar Day Cell Attributes */
+        .day-cell {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .day-num {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
         }
 
         .day-value {
             font-size: 13px;
             font-weight: 700;
-            margin-top: 8px;
+            text-align: right;
+            margin-top: auto;
         }
 
+        /* Status Visual States */
         .day-cell.profitable {
-            background-color: rgba(16, 185, 129, 0.06);
-            border-color: rgba(16, 185, 129, 0.3);
+            background-color: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.25);
         }
         .day-cell.profitable .day-value { color: var(--metric-green); }
 
         .day-cell.unprofitable {
-            background-color: rgba(239, 68, 68, 0.06);
-            border-color: rgba(239, 68, 68, 0.3);
+            background-color: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.25);
         }
         .day-cell.unprofitable .day-value { color: var(--metric-red); }
+
+        .day-cell.empty {
+            opacity: 0.4;
+            background-color: transparent;
+        }
 
         /* Data Logging Table Matrix */
         .table-panel {
@@ -362,7 +382,7 @@
 </head>
 <body>
 
-    <!-- Left Structural Navigation Deck -->
+    <!-- Left Structural Sidebar -->
     <aside class="sidebar">
         <div class="brand">
             TRADING <span>DOJON</span>
@@ -376,10 +396,10 @@
         </ul>
     </aside>
 
-    <!-- Main Dynamic Application Screen -->
+    <!-- Main Workspace Area -->
     <main class="workspace">
         
-        <!-- Header Bar Component -->
+        <!-- Header Controls Component -->
         <div class="top-bar">
             <div class="greeting">
                 <h2>Welcome Back, Trader</h2>
@@ -392,7 +412,7 @@
             </div>
         </div>
 
-        <!-- Performance Key Stats Row -->
+        <!-- Analytical Performance Matrix Row -->
         <section class="metrics-container">
             <div class="metric-card">
                 <div class="metric-label">Net P&L</div>
@@ -412,81 +432,138 @@
             </div>
         </section>
 
-        <!-- Main Workspace Dual Panel Grid Split -->
-        <div class="content-split">
-            
-            <!-- Manual Logger Section Panel -->
-            <section class="section-panel">
-                <div class="panel-header">Log New Trade Execution</div>
-                <form id="executionForm" class="logger-grid">
-                    <div class="input-block">
-                        <label for="symbol">Symbol / Ticker</label>
-                        <input type="text" id="symbol" placeholder="e.g., TSLA" required>
-                    </div>
-                    <div class="input-block">
-                        <label for="side">Direction</label>
-                        <select id="side">
-                            <option value="Long">Long</option>
-                            <option value="Short">Short</option>
-                        </select>
-                    </div>
-                    <div class="input-block">
-                        <label for="entryPx">Entry Price ($)</label>
-                        <input type="number" id="entryPx" step="any" placeholder="0.00" required>
-                    </div>
-                    <div class="input-block">
-                        <label for="exitPx">Exit Price ($)</label>
-                        <input type="number" id="exitPx" step="any" placeholder="0.00" required>
-                    </div>
-                    <div class="input-block">
-                        <label for="volume">Volume / Size</label>
-                        <input type="number" id="volume" placeholder="e.g., 100" required>
-                    </div>
-                    <div class="input-block">
-                        <label for="realizedPnl">Realized P&L ($)</label>
-                        <input type="number" id="realizedPnl" step="any" placeholder="Negative for losses" required>
-                    </div>
-                    <div class="input-block span-all">
-                        <label for="tradeNotes">Playbook Setup Notes & Review</label>
-                        <textarea id="tradeNotes" rows="3" placeholder="Identify market patterns or internal psychological state..."></textarea>
-                    </div>
-                    <button type="submit" class="submit-trigger">Sync Trade to Log</button>
-                </form>
-            </section>
+        <!-- Logger Section Block & Weekly Grid Interface -->
+        <div class="section-panel">
+            <div class="logger-split">
+                <div>
+                    <div class="panel-header">Log New Trade Execution</div>
+                    <form id="executionForm" class="logger-grid">
+                        <div class="input-block">
+                            <label for="symbol">Symbol / Ticker</label>
+                            <input type="text" id="symbol" placeholder="e.g., TSLA" required>
+                        </div>
+                        <div class="input-block">
+                            <label for="side">Direction</label>
+                            <select id="side">
+                                <option value="Long">Long</option>
+                                <option value="Short">Short</option>
+                            </select>
+                        </div>
+                        <div class="input-block">
+                            <label for="entryPx">Entry Price ($)</label>
+                            <input type="number" id="entryPx" step="any" placeholder="0.00" required>
+                        </div>
+                        <div class="input-block">
+                            <label for="exitPx">Exit Price ($)</label>
+                            <input type="number" id="exitPx" step="any" placeholder="0.00" required>
+                        </div>
+                        <div class="input-block">
+                            <label for="volume">Volume / Size</label>
+                            <input type="number" id="volume" placeholder="e.g., 100" required>
+                        </div>
+                        <div class="input-block">
+                            <label for="realizedPnl">Realized P&L ($)</label>
+                            <input type="number" id="realizedPnl" step="any" placeholder="Negative for losses" required>
+                        </div>
+                        <div class="input-block span-all">
+                            <label for="tradeNotes">Playbook Setup Notes & Review</label>
+                            <textarea id="tradeNotes" rows="2" placeholder="Identify market patterns or internal psychological state..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-trigger">Sync Trade to Log</button>
+                    </form>
+                </div>
 
-            <!-- TradeZella Replicated Week View Calendar Component -->
-            <section class="section-panel">
-                <div class="panel-header">Weekly Session Overview</div>
-                <div class="calendar-wrapper">
-                    <div class="calendar-row">
+                <!-- Replicated Weekly Overview Column -->
+                <div>
+                    <div class="panel-header">
+                        Weekly Overview
+                        <span class="panel-subtitle">Current Iteration</span>
+                    </div>
+                    <div class="weekly-grid">
                         <div class="day-cell profitable">
-                            <div class="day-label">Mon</div>
+                            <span class="day-num">Mon</span>
                             <div class="day-value">+$900</div>
                         </div>
                         <div class="day-cell unprofitable">
-                            <div class="day-label">Tue</div>
+                            <span class="day-num">Tue</span>
                             <div class="day-value">-$310</div>
                         </div>
                         <div class="day-cell profitable">
-                            <div class="day-label">Wed</div>
+                            <span class="day-num">Wed</span>
                             <div class="day-value">+$450</div>
                         </div>
                         <div class="day-cell profitable">
-                            <div class="day-label">Thu</div>
+                            <span class="day-num">Thu</span>
                             <div class="day-value">+$800</div>
                         </div>
                         <div class="day-cell">
-                            <div class="day-label">Fri</div>
+                            <span class="day-num">Fri</span>
                             <div class="day-value">$0</div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
         </div>
 
-        <!-- Historic Trades Data Logging Block -->
+        <!-- Full TradeZella Replicated Monthly Calendar Interface -->
+        <section class="section-panel">
+            <div class="panel-header">
+                Monthly Performance Calendar
+                <span class="panel-subtitle">Calendar Tracking Matrix</span>
+            </div>
+            
+            <div class="monthly-calendar-grid">
+                <!-- Day Column Label Identifiers -->
+                <div class="calendar-header-day">Sun</div>
+                <div class="calendar-header-day">Mon</div>
+                <div class="calendar-header-day">Tue</div>
+                <div class="calendar-header-day">Wed</div>
+                <div class="calendar-header-day">Thu</div>
+                <div class="calendar-header-day">Fri</div>
+                <div class="calendar-header-day">Sat</div>
+
+                <!-- Calendar Row Block Calculations Map -->
+                <!-- Week 1 Offset -->
+                <div class="day-cell empty"></div>
+                <div class="day-cell empty"></div>
+                <div class="day-cell empty"></div>
+                <div class="day-cell profitable"><span class="day-num">1</span><div class="day-value">+$240</div></div>
+                <div class="day-cell unprofitable"><span class="day-num">2</span><div class="day-value">-$180</div></div>
+                <div class="day-cell profitable"><span class="day-num">3</span><div class="day-value">+$610</div></div>
+                <div class="day-cell empty"></div>
+
+                <!-- Week 2 -->
+                <div class="day-cell empty"></div>
+                <div class="day-cell profitable"><span class="day-num">6</span><div class="day-value">+$1,100</div></div>
+                <div class="day-cell unprofitable"><span class="day-num">7</span><div class="day-value">-$420</div></div>
+                <div class="day-cell profitable"><span class="day-num">8</span><div class="day-value">+$330</div></div>
+                <div class="day-cell profitable"><span class="day-num">9</span><div class="day-value">+$540</div></div>
+                <div class="day-cell unprofitable"><span class="day-num">10</span><div class="day-value">-$200</div></div>
+                <div class="day-cell empty"></div>
+
+                <!-- Week 3 -->
+                <div class="day-cell empty"></div>
+                <div class="day-cell profitable"><span class="day-num">13</span><div class="day-value">+$900</div></div>
+                <div class="day-cell unprofitable"><span class="day-num">14</span><div class="day-value">-$310</div></div>
+                <div class="day-cell profitable"><span class="day-num">15</span><div class="day-value">+$450</div></div>
+                <div class="day-cell profitable"><span class="day-num">16</span><div class="day-value">+$800</div></div>
+                <div class="day-cell"><span class="day-num">17</span><div class="day-value">$0</div></div>
+                <div class="day-cell empty"></div>
+
+                <!-- Week 4 -->
+                <div class="day-cell empty"></div>
+                <div class="day-cell"><span class="day-num">20</span><div class="day-value">$0</div></div>
+                <div class="day-cell"><span class="day-num">21</span><div class="day-value">$0</div></div>
+                <div class="day-cell"><span class="day-num">22</span><div class="day-value">$0</div></div>
+                <div class="day-cell"><span class="day-num">23</span><div class="day-value">$0</div></div>
+                <div class="day-cell"><span class="day-num">24</span><div class="day-value">$0</div></div>
+                <div class="day-cell empty"></div>
+            </div>
+        </section>
+
+        <!-- Historic Trades Execution Matrix -->
         <section class="section-panel table-panel">
-            <div class="panel-header">Recent Executions Matrix</div>
+            <div class="panel-header">Recent Executions Log</div>
             <div class="responsive-table-scroller">
                 <table>
                     <thead>
@@ -544,9 +621,8 @@
 
     </main>
 
-    <!-- Scripting Calculations Engine -->
+    <!-- Scripting Engine Calculations Logic -->
     <script>
-        // Internal structured dataset simulating baseline user log state
         let journalDatabase = [
             { ticker: 'NVDA', side: 'Long', entry: 125.00, exit: 129.50, vol: 200, pnl: 900, notes: 'Opening Range Breakout tracking broader tech index trend.' },
             { ticker: 'AMD', side: 'Short', entry: 160.00, exit: 163.10, vol: 100, pnl: -310, notes: 'Fading structural resistance early. Flawed entry window.' },
@@ -609,11 +685,9 @@
                 containerBody.insertAdjacentHTML('beforeend', tableRowHtml);
             });
 
-            // Statistical Formulas Execution
             const calculatedWinRate = journalDatabase.length > 0 ? ((totalWinsCount / journalDatabase.length) * 100).toFixed(1) : '0.0';
             const calculatedProfitFactor = aggregateLosses > 0 ? (aggregateProfits / aggregateLosses).toFixed(2) : (aggregateProfits > 0 ? 'Max Edge' : '0.00');
 
-            // Render output adjustments inside interface nodes
             const pnlDisplayNode = document.getElementById('ui-net-pnl');
             pnlDisplayNode.textContent = (netCumulativeReturn >= 0 ? '+$' : '-$') + Math.abs(netCumulativeReturn).toLocaleString(undefined, {minimumFractionDigits: 2});
             pnlDisplayNode.className = netCumulativeReturn >= 0 ? 'metric-value positive' : 'metric-value negative';
@@ -625,3 +699,4 @@
     </script>
 </body>
 </html>
+
